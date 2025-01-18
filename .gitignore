@@ -1,0 +1,8 @@
+*.env
+
+back/node_modules
+
+docker/data
+
+front/node_modules
+front/.expo

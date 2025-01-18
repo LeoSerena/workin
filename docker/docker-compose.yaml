@@ -1,0 +1,35 @@
+
+---
+
+services:
+  # express:
+  #   image: bitnami/express
+  #   restart: always
+  #   depends_on: 
+  #     - mongo_db
+
+  mongo_db:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGODB_USR}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_PWD}
+    volumes:
+      - ./data/mongodb:/data/db
+    ports:
+      - 27017:27017
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGODB_USR}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGODB_PWD}
+      ME_CONFIG_MONGODB_URL: mongodb://${MONGODB_USR}:${MONGODB_PWD}@mongo_db:27017/
+      ME_CONFIG_BASICAUTH: false
+
+  # spark_db:
+  #   iamge: bitnami/spark
+  #   restart: always
