@@ -1,22 +1,8 @@
-const express = require('express');
+import express from 'express';
+
+import User from '../models/User.js';
+
 const router = express.Router();
-
-const User = require('../models/User');
-
-router.post('/', (req, res) => {
-  const user = new User(req.body);
-  user
-    .save()
-    .then((result) => res.status(201).json(result))
-    .catch((error) => res.status(400).json({ error: error.message }));
-});
-
-// Get all users
-router.get('/', (req, res) => {
-  User.find()
-    .then((users) => res.json(users))
-    .catch((error) => res.status(500).json({ error: error.message }));
-});
 
 // Update a user
 router.put('/:id', (req, res) => {
@@ -38,4 +24,4 @@ router.delete('/:id', (req, res) => {
     .catch((error) => res.status(500).json({ error: error.message }));
 });
 
-module.exports = router;
+export default router;

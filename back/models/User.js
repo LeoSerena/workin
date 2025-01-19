@@ -1,9 +1,10 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const userSchema = new mongoose.Schema({
-    name : {
+    username : {
         type : String,
-        required : true
+        required : true,
+        unique : true
     },
     email : {
         type : String,
@@ -14,8 +15,12 @@ const userSchema = new mongoose.Schema({
         type : String,
         required : true
     },
-    workoutData : [ { type : mongoose.Schema.Types.ObjectId, ref: 'WorkoutRecord' } ]
+    workoutRecords : [ 
+        { type : mongoose.Schema.Types.ObjectId, ref: 'WorkoutRecord' } 
+    ],
+    
+
 }, {timestamps : true})
 
 
-module.exports = mongoose.model('User', userSchema)
+export default mongoose.model('User', userSchema);

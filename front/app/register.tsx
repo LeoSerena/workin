@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 
 console.log(process.env)
@@ -8,6 +9,9 @@ const RegistrationPage = () => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [retypePassword, setRetypePassword] = useState('');
+
+    const navigation = useNavigation();
 
     const handleRegister = async () => {
         if(!name || !email || !password){
@@ -15,15 +19,16 @@ const RegistrationPage = () => {
             return;
         }
 
+        if(password !== retypePassword){
+          Alert.alert("Error", "Both passwords must be equal")
+        }
+
         const userData = { name, email, password };
-
-
         try {
             const register_route = "http://localhost:" + process.env.EXPO_PUBLIC_PORT + process.env.EXPO_PUBLIC_USER_ROUTE
-            console.log(register_route)
             const response = await axios.post(register_route, userData);
-            Alert.alert('Success', response.data.message || 'Registration successful!');
-        } catch (error) {
+            navigation.navigate('authenticated')
+          } catch (error) {
             Alert.alert('Error', error.response?.data?.message || 'Something went wrong.');
         }
     };
@@ -53,6 +58,14 @@ const RegistrationPage = () => {
             placeholder="Password"
             value={password}
             onChangeText={setPassword}
+            secureTextEntry
+          />
+
+          <TextInput
+            style={styles.input}
+            placeholder="Retype password"
+            value={retypePassword}
+            onChangeText={setRetypePassword}
             secureTextEntry
           />
     

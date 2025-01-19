@@ -1,11 +1,10 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
-const connectDB = () => {
+export function connectDB(){
     const username = encodeURIComponent(process.env.MONGODB_USR); 
     const password = encodeURIComponent(process.env.MONGODB_PWD); 
     const host = process.env.MONGODB_HOST || 'localhost'; 
     const port = process.env.MONGODB_PORT || '27017'; 
-    const dbName = process.env.MONGODB_DB || 'user'; 
 
     const uri = `mongodb://${username}:${password}@${host}:${port}`;
     console.log(uri)
@@ -19,4 +18,3 @@ const connectDB = () => {
     });
 };
 
-module.exports = connectDB;

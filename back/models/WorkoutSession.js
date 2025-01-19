@@ -28,8 +28,20 @@ const WeightWorkoutSession = workoutRecordSchema.discriminator(
     })
 )
 
+const BodyWeightWorkoutSession = workoutRecordSchema.discriminator(
+    'Weight',
+    new mongoose.Schema({
+        workoutRecords : [{
+            workoutType : String,
+            sets : Number,
+            repetitions : Number
+        }]
+    })
+)
+
 
 module.exports = {
     RunningWorkoutSession,
-    WeightWorkoutSession
+    WeightWorkoutSession,
+    BodyWeightWorkoutSession
 }
