@@ -1,7 +1,7 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const workoutSessionSchema = new mongoose.Schema(
-    { workoutType : { type : string, required: true } }, 
+    { workoutType : { type : String, required: true } }, 
     { timestamps : true }
 )
 mongoose.model('WorkoutSession', workoutSessionSchema)
@@ -17,7 +17,7 @@ const RunningWorkoutSession = workoutSessionSchema.discriminator(
     })
 )
 
-const WeightWorkoutSession = workoutRecordSchema.discriminator(
+const WeightWorkoutSession = workoutSessionSchema.discriminator(
     'Weight',
     new mongoose.Schema({
         workoutRecords : [{
@@ -28,8 +28,8 @@ const WeightWorkoutSession = workoutRecordSchema.discriminator(
     })
 )
 
-const BodyWeightWorkoutSession = workoutRecordSchema.discriminator(
-    'Weight',
+const BodyWeightWorkoutSession = workoutSessionSchema.discriminator(
+    'BodyWeight',
     new mongoose.Schema({
         workoutRecords : [{
             workoutType : String,
@@ -40,8 +40,6 @@ const BodyWeightWorkoutSession = workoutRecordSchema.discriminator(
 )
 
 
-module.exports = {
-    RunningWorkoutSession,
-    WeightWorkoutSession,
-    BodyWeightWorkoutSession
-}
+export const runningSession = RunningWorkoutSession;
+export const weightSession = WeightWorkoutSession;
+export const bodySession = BodyWeightWorkoutSession;

@@ -22,13 +22,24 @@ router.post('/', async (req, res) => {
         const user = await findUser(identifier, identifier)
         if(!user){ return res.status(400).json({ message : "Incorrect username or Password"} ); }
         if (await bcrypt.compare(password, user.password)){
-            if(process.env.ENVIRONEMENT !== 'PROD'){ console.log("Logged user", user.username); }
-            const token = jwt.sign(
+            if(process.env.ENVIRONEMENT !== 'PROD') console.log("Logged user", user.username);
+            const access_token = jwt.sign(
                 { id: user._id, username : user.username, email : user.email },
-                process.env.JWT_SECRET_KEY,
-                { expiresIn : '1h' }
+                process.env.JWT_ACCESS_TOKEN,
+                { expiresIn : '15m' }
             )
-            res.cookie('jwtoken', token, { httpOnly: true, maxAge: 3600000 })
+            const refresh_token = jwt.sign(
+                { id: user._id },
+                process.env.JWT_REFRESH_TOKEN,
+                { expiresIn: '12h'}
+            )
+
+            res.cookie('access_token', access_token, 
+                { maxAge: 1000 * 60 * 10 }            
+            )
+            res.cookie('refresh_token', refresh_token, 
+                { httpOnly: true, maxAge: 1000 * 60 * 60 * 12, secure: true}
+            )
             res.status(200).json({ message : "Successful Login"})
         }else {
             return res.status(403).json({ message : "Incorrect username or Password"} );
@@ -40,6 +51,7 @@ router.post('/', async (req, res) => {
     }
 })
 
+
 router.post('/register', async (req, res) => {
     console.log(req.body)
     const { username, email, password, retypePassword } = req.body
@@ -47,7 +59,9 @@ router.post('/register', async (req, res) => {
     const user = await findUser(username, email)
     if(user){ return res.status(400).json({ error : "username or email already exists"}) }
     const salt = await bcrypt.genSalt(11);
-    const newuser = new User({ 'username' : username, 'email' : email, 'password' : await bcrypt.hash(password, salt) });
+    const tmp = { 'username' : username, 'email' : email, 'password' : await bcrypt.hash(password, salt) }
+    console.log(tmp)
+    const newuser = new User(tmp);
     newuser
       .save()
       .then((result) => res.status(201).json(result))

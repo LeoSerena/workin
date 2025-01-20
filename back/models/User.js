@@ -15,8 +15,8 @@ const userSchema = new mongoose.Schema({
         type : String,
         required : true
     },
-    workoutRecords : [ 
-        { type : mongoose.Schema.Types.ObjectId, ref: 'WorkoutRecord' } 
+    workoutSessions : [ 
+        { type : mongoose.Schema.Types.ObjectId, ref: 'WorkoutSession', unique: false, required: false } 
     ],
     
 

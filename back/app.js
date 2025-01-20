@@ -4,9 +4,10 @@ import cors from'cors';
 import cookieParser from 'cookie-parser';
 
 import { connectDB } from './config/db.js';
-import { verifyToken } from './middlewares/tokenVerify.js';
+import { verifyToken, refreshToken } from './middlewares/tokenManagement.js';
 import userRoutes from './routes/userRoutes.js';
 import loginRoute from './routes/loginRoute.js';
+import sessionRoute from './routes/sessionRoutes.js';
 
 dotenv.config()
 const app = express();
@@ -20,8 +21,9 @@ app.use(
     methods: ['GET', 'POST']
   })
 );
-app.use(process.env.USER_ROUTE, verifyToken, userRoutes );
-app.use(process.env.LOGIN_ROUTE, loginRoute );
+app.use( process.env.LOGIN_ROUTE, loginRoute );
+app.use( process.env.USER_ROUTE, refreshToken, verifyToken, userRoutes );
+app.use( process.env.WORKOUT_ROUTE, refreshToken, verifyToken, sessionRoute );
 
 connectDB();
 
