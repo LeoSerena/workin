@@ -8,6 +8,7 @@ import { verifyToken, refreshToken } from './middlewares/tokenManagement.js';
 import userRoutes from './routes/userRoutes.js';
 import loginRoute from './routes/loginRoute.js';
 import sessionRoute from './routes/sessionRoutes.js';
+import sleepRoute from './routes/sleepRoutes.js';
 
 dotenv.config()
 const app = express();
@@ -23,7 +24,8 @@ app.use(
 );
 app.use( process.env.LOGIN_ROUTE, loginRoute );
 app.use( process.env.USER_ROUTE, refreshToken, verifyToken, userRoutes );
-app.use( process.env.WORKOUT_ROUTE, refreshToken, verifyToken, sessionRoute );
+app.use( process.env.SESSION_ROUTE, refreshToken, verifyToken, sessionRoute );
+app.use( process.env.SLEEP_ROUTE, refreshToken, verifyToken, sleepRoute );
 
 connectDB();
 

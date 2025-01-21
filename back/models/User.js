@@ -18,6 +18,9 @@ const userSchema = new mongoose.Schema({
     workoutSessions : [ 
         { type : mongoose.Schema.Types.ObjectId, ref: 'WorkoutSession', unique: false, required: false } 
     ],
+    sleepRecords : [
+        { type : mongoose.Schema.Types.ObjectId, ref: 'SleepRecords', unique : false, required: false}
+    ]
     
 
 }, {timestamps : true})
