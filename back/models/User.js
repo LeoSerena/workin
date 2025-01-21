@@ -15,11 +15,14 @@ const userSchema = new mongoose.Schema({
         type : String,
         required : true
     },
+    measures : [
+        { type : mongoose.Schema.Types.ObjectId, ref: 'Measures', unique: false, required: false } 
+    ],
     workoutSessions : [ 
         { type : mongoose.Schema.Types.ObjectId, ref: 'WorkoutSession', unique: false, required: false } 
     ],
     sleepRecords : [
-        { type : mongoose.Schema.Types.ObjectId, ref: 'SleepRecords', unique : false, required: false}
+        { type : mongoose.Schema.Types.ObjectId, ref: 'SleepRecords', unique : false, required: false }
     ]
     
 

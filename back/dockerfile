@@ -1,0 +1,12 @@
+# Use the official Node.js image
+FROM node:lts-slim
+
+# Set the working directory
+WORKDIR /usr/src/app
+
+# Copy package.json and package-lock.json
+COPY package*.json ./
+RUN npm install --production
+COPY . .
+
+CMD ["npm", "start"]

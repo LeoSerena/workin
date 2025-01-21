@@ -9,6 +9,7 @@ import userRoutes from './routes/userRoutes.js';
 import loginRoute from './routes/loginRoute.js';
 import sessionRoute from './routes/sessionRoutes.js';
 import sleepRoute from './routes/sleepRoutes.js';
+import measureRoute from './routes/measureRoute.js';
 
 dotenv.config()
 const app = express();
@@ -19,7 +20,7 @@ app.use(cookieParser());
 app.use(
   cors({
     origin: [process.env.CORS_ALLOWED],
-    methods: ['GET', 'POST']
+    methods: ['GET', 'POST', 'PUT']
   })
 );
 app.use( process.env.LOGIN_ROUTE, loginRoute );
