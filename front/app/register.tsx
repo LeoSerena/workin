@@ -1,100 +1,42 @@
-import React, { useState } from 'react'
-import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import axios from 'axios';
+import React from 'react';
+import { useForm } from 'react-hook-form';
+import * as yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
 
-console.log(process.env)
+type RegisterInputs = {
+    email : string
+    username : string
+    password : string
+    repassword : string
+}
 
-const RegistrationPage = () => {
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [retypePassword, setRetypePassword] = useState('');
+const registerSchema = yup
+    .object()
+    .shape({
+        email : yup.string().required(),
+        username : yup.string().required(),
+        password : yup.string().required(),
+        repassword : yup.string().required()
+    })
+    .required()
 
-    const navigation = useNavigation();
-
-    const handleRegister = async () => {
-        if(!name || !email || !password){
-            Alert.alert("Error", "All fields are required");
-            return;
-        }
-
-        if(password !== retypePassword){
-          Alert.alert("Error", "Both passwords must be equal")
-        }
-
-        const userData = { name, email, password };
-        try {
-            const register_route = "http://localhost:" + process.env.EXPO_PUBLIC_PORT + process.env.EXPO_PUBLIC_USER_ROUTE
-            const response = await axios.post(register_route, userData);
-            navigation.navigate('authenticated')
-          } catch (error) {
-            Alert.alert('Error', error.response?.data?.message || 'Something went wrong.');
-        }
-    };
+const RegisterPage = () => {
+    const { register, handleSubmit } = useForm<RegisterInputs>({ resolver : yupResolver(registerSchema) })
 
     return (
-        <View style={styles.container}>
-          <Text style={styles.title}>Register</Text>
-    
-          <TextInput
-            style={styles.input}
-            placeholder="Name"
-            value={name}
-            onChangeText={setName}
-          />
-    
-          <TextInput
-            style={styles.input}
-            placeholder="Email"
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
-          />
-    
-          <TextInput
-            style={styles.input}
-            placeholder="Password"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-          />
+        <form onSubmit={ handleSubmit((data) => console.log(data)) }>
+            <label>email</label>
+            <input {...register("email")} />
+            <label>username</label>
+            <input {...register("username")} />
+            <label>password</label>
+            <input {...register("password")} />
+            <label>repassword</label>
+            <input {...register("repassword")} />
+            <input type="submit" />
+        </form>
+    )
+}
 
-          <TextInput
-            style={styles.input}
-            placeholder="Retype password"
-            value={retypePassword}
-            onChangeText={setRetypePassword}
-            secureTextEntry
-          />
-    
-          <Button title="Register" onPress={handleRegister} />
-        </View>
-      );
-    };
-    
-    const styles = StyleSheet.create({
-      container: {
-        flex: 1,
-        justifyContent: 'center',
-        padding: 16,
-        backgroundColor: '#fff',
-      },
-      title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginBottom: 20,
-        textAlign: 'center',
-      },
-      input: {
-        borderWidth: 1,
-        borderColor: '#ccc',
-        borderRadius: 5,
-        padding: 10,
-        marginBottom: 15,
-      },
-    });
-    
-    export default RegistrationPage;
-    
+
+export default RegisterPage;

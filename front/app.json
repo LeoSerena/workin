@@ -1,6 +1,7 @@
 {
   "expo": {
     "name": "workin",
+    "description": "Web app to give workout and health data",
     "slug": "workin",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -29,7 +30,8 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
-      ]
+      ],
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true

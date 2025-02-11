@@ -34,13 +34,15 @@ router.post('/', async (req, res) => {
                 { expiresIn: '12h'}
             )
 
-            res.cookie('access_token', access_token, 
+            return res.cookie(
+                'access_token', 
+                access_token, 
                 { maxAge: 1000 * 60 * 10 }            
-            )
-            res.cookie('refresh_token', refresh_token, 
-                { httpOnly: true, maxAge: 1000 * 60 * 60 * 12, secure: true}
-            )
-            res.status(200).json({ message : "Successful Login"})
+            ).cookie(
+                'refresh_token', 
+                refresh_token, 
+                { httpOnly: true, maxAge: 1000 * 60 * 60 * 12, secure: process.env.ENVIRONEMENT === 'PROD'}
+            ).status(200).json({ message : "Successful Login"})
         }else {
             return res.status(403).json({ message : "Incorrect username or Password"} );
         }

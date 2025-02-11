@@ -2,14 +2,14 @@
 ---
 
 services:
-  express_server:
-    image: workin_back
-    ports:
-      - 5000:5000
-    depends_on:
-      - mongo_db
-    env_file:
-      - path: ./.env
+  # express_server:
+  #   image: workin_back:0.12
+  #   ports:
+  #     - 5000:5000
+  #   depends_on:
+  #     - mongo_db
+  #   env_file:
+  #     - path: ./.env
 
   mongo_db:
     image: mongo
