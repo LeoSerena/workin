@@ -3,6 +3,7 @@
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SessionProvider } from '@/utils/context';
+import { Slot } from 'expo-router';
 
 export default function RootLayout() {
   return (

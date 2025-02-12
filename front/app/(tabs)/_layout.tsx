@@ -10,12 +10,11 @@ export default function TabLayout() {
   const router = useRouter();
 
   useEffect(() => {
-    console.log('Redirect check:', { isLoading, userToken });
     if(!isLoading && !userToken){ router.replace("/login") }
   },[isLoading, userToken])
 
   return (
-      <UserIcon username={String(userToken)}> 
+      <UserIcon> 
         <Tabs
             screenOptions={{
                 tabBarActiveTintColor: '#ffd33d',
@@ -30,7 +29,7 @@ export default function TabLayout() {
             }}
         >
           <Tabs.Screen
-            name="index"
+            name="home"
             options={{
               title: 'Home',
               tabBarIcon: ({ color, focused }) => (
@@ -42,6 +41,24 @@ export default function TabLayout() {
             name="sessions"
             options={{
               title: 'Sessions',
+              tabBarIcon: ({ color, focused }) => (
+                <Ionicons name={focused ? 'information-circle' : 'information-circle-outline'} color={color} size={24}/>
+              ),
+            }}
+          />
+          <Tabs.Screen
+            name="sleeps"
+            options={{
+              title: 'Sleeps',
+              tabBarIcon: ({ color, focused }) => (
+                <Ionicons name={focused ? 'information-circle' : 'information-circle-outline'} color={color} size={24}/>
+              ),
+            }}
+          />
+          <Tabs.Screen
+            name="measures"
+            options={{
+              title: 'Measures',
               tabBarIcon: ({ color, focused }) => (
                 <Ionicons name={focused ? 'information-circle' : 'information-circle-outline'} color={color} size={24}/>
               ),

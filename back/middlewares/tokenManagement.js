@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
+import winston from 'winston';
 
 function is_token_expiring_soon( exp ){
     const current_time = Math.floor(Date.now() / 1000)
@@ -11,8 +12,8 @@ function is_token_expiring_soon( exp ){
 export function verifyToken(req, res, next){
     if(process.env.ENVIRONMENT !== 'PROD') console.log('passing through token validation');
     const token = req.cookies?.access_token
+    winston.debug(req.cookies)
     if( !token ) return res.status(401).json({ message : 'Missing Token'})
-    console.log(token)
     jwt.verify(token, process.env.JWT_ACCESS_TOKEN, (err, token_data) => {
         if( err ) return res.status(403).json({ message : 'Unauthorized: access token verification failed' });
         req.token_data = token_data
@@ -21,7 +22,6 @@ export function verifyToken(req, res, next){
 }
 
 export function refreshToken(req, res, next) {
-    if (process.env.ENVIRONMENT !== 'PROD') console.log('passing through token refresh');
     const accessToken = req.cookies?.access_token;
     const refreshToken = req.cookies?.refresh_token;
     if ( !refreshToken || (accessToken && !is_token_expiring_soon(jwt.decode(accessToken).exp)) ) return next();

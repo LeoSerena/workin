@@ -1,4 +1,5 @@
 import express from 'express';
+import winston from 'winston';
 
 import User from '../models/User.js';
 
@@ -12,8 +13,11 @@ const PROFILE_DATA = {
 }
 
 router.get('/profile', async (req, res) => {
+  const user_id = req.token_data.user_id
+  winston.debug(req.token_data)
+
   const user = await User
-    .findById( req.token_data.user_id )
+    .findById( user_id )
     .select( PROFILE_DATA )
   console.log(user)
   if(!user) return res.status(500).json({ message : "User was not found"});

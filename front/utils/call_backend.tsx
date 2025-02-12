@@ -4,6 +4,7 @@ export async function call_backend(method :string, route: string, payload? : any
 
     const config = { withCredentials: true }
 
+    // const api_route = "http://192.168.1.40" + ":" + "5000" + route
     const api_route = "http://localhost" + ":" + "5000" + route
     switch(method){
         case "GET":
@@ -12,6 +13,14 @@ export async function call_backend(method :string, route: string, payload? : any
             return await axios.post( api_route, payload, config )
     }
 }
+
+export type RegisterInputs = {
+    email : string
+    username : string
+    password : string
+    repassword : string
+}
+export async function register( creds : RegisterInputs ){ return call_backend('POST', '/register', creds) }
 
 export type LoginInputs = {
     identifier : string
@@ -25,3 +34,4 @@ export type ProfileData = {
     email : string
 }
 export async function fetchProfile() { return await call_backend('GET', '/user/profile') }
+

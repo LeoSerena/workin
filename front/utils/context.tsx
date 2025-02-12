@@ -1,56 +1,49 @@
 import { createContext, type PropsWithChildren, useEffect, useState } from 'react';
 import { useStorageState } from './useStorageState';
-import { authenticate } from '@/utils/call_backend';
-import { LoginInputs } from '@/app/login';
+import { authenticate, LoginInputs } from '@/utils/call_backend';
+import { useRouter } from 'expo-router';
 
 export const AuthContext = createContext<{
     signIn: (T : LoginInputs) => void;
     signOut: () => void;
-    userToken: string | null,
+    // accessToken: string | null,
+    refreshToken: string | null,
     isLoading: boolean;
 }>({
     signIn: (T) => null,
     signOut: () => null,
-    userToken: null,
+    // accessToken: null,
+    refreshToken: null,
     isLoading: true
 });
 
 
 export function SessionProvider( { children } : PropsWithChildren ) {
-    const [ userToken, setUserToken ] = useStorageState( "userToken" );
+    // const [ accessToken, setAccessToken ] = useStorageState( "accessToken" );
+    const [ refreshToken, setRefreshToken ] = useStorageState( "refreshToken" );
     const [ isLoading, setIsLoading ] = useState(true);
 
-    // useEffect(() => {
-    //     async function checkToken(){
-    //         if(userToken) {
-    //             const isValid = await verifyTokenWithAPI(userToken); // Here we check validity with an endpoint on server
-    //             if(!isValid){
-    //                 // Here if we should handle the case where the user has creds locally and authenticare again
-    //                 await setUserToken(null)
-    //             }
-    //         }
-    //         setIsLoading(false)
-    //     }
-    //     checkToken();
-    // }, [ userToken ])
+    const router = useRouter();
 
     return (
         <AuthContext.Provider
             value={{
                 signIn : async (data : LoginInputs) =>  { 
+                    setIsLoading( true )
                     const res = await authenticate(data)
-                    setUserToken("tamere")
+                    setRefreshToken(res?.data.refresh_token)
+                    router.push("/(tabs)/sessions")
                 },
-                signOut : async () =>  { setUserToken( null ) },
-                userToken,
+                signOut : async () =>  { 
+                    // setAccessToken( null ) 
+                    setRefreshToken( null )
+                },
+                // accessToken, 
+                refreshToken, 
                 isLoading
             }}>
             { children }
         </AuthContext.Provider>
     )
-}
-
-async function verifyTokenWithAPI(token: string) {
-    // Simulate a network request to check token validity
-    return new Promise((resolve) => setTimeout(() => resolve(token === "xxx"), 1000));
+     
 }

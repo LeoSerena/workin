@@ -1,14 +1,9 @@
 import React from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
+import { View, Text, TextInput, Button, StyleSheet } from "react-native";
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-
-type RegisterInputs = {
-    email : string
-    username : string
-    password : string
-    repassword : string
-}
+import { register } from '@/utils/call_backend';
 
 const registerSchema = yup
     .object()
@@ -21,22 +16,99 @@ const registerSchema = yup
     .required()
 
 const RegisterPage = () => {
-    const { register, handleSubmit } = useForm<RegisterInputs>({ resolver : yupResolver(registerSchema) })
+        const { control, handleSubmit } = useForm({ 
+            resolver: yupResolver( registerSchema ),
+            defaultValues: { email:"", username:"", password:"", repassword:"" }
+        });
 
     return (
-        <form onSubmit={ handleSubmit((data) => console.log(data)) }>
-            <label>email</label>
-            <input {...register("email")} />
-            <label>username</label>
-            <input {...register("username")} />
-            <label>password</label>
-            <input {...register("password")} />
-            <label>repassword</label>
-            <input {...register("repassword")} />
-            <input type="submit" />
-        </form>
-    )
+        <View style={styles.container}>
+            <Text style={styles.label}>Email</Text>
+            <Controller
+                control={control}
+                name="email"
+                rules={{ required: true }}
+                render={({ field: { onChange, onBlur, value } }) => (
+                    <TextInput
+                        style={styles.input}
+                        onBlur={onBlur}
+                        onChangeText={onChange}
+                        value={value}
+                        autoCapitalize="none"
+                        keyboardType="email-address"
+                />
+                )}
+            />
+            <Text style={styles.label}>Email</Text>
+            <Controller
+                control={control}
+                name="email"
+                rules={{ required: true }}
+                render={({ field: { onChange, onBlur, value } }) => (
+                    <TextInput
+                        style={styles.input}
+                        onBlur={onBlur}
+                        onChangeText={onChange}
+                        value={value}
+                        autoCapitalize="none"
+                        keyboardType="email-address"
+                    />
+                )}
+            />
+            <Text style={styles.label}>Password</Text>
+            <Controller
+                control={control}
+                name="password"
+                rules={{ required: true }}
+                render={({ field: { onChange, onBlur, value } }) => (
+                    <TextInput
+                        style={styles.input}
+                        onBlur={onBlur}
+                        onChangeText={onChange}
+                        value={value}
+                        secureTextEntry
+                    />
+                )}
+            />
+            <Text style={styles.label}>Retype Password</Text>
+            <Controller
+                control={control}
+                name="repassword"
+                rules={{ required: true }}
+                render={({ field: { onChange, onBlur, value } }) => (
+                    <TextInput
+                        style={styles.input}
+                        onBlur={onBlur}
+                        onChangeText={onChange}
+                        value={value}
+                        secureTextEntry
+                    />
+                )}
+            />
+          <Button title="Sign In" onPress={handleSubmit(register)} />
+        </View>
+    );
 }
 
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        padding: 20,
+        backgroundColor: "#f5f5f5",
+    },
+    label: {
+        fontSize: 16,
+        fontWeight: "bold",
+        marginBottom: 5,
+    },
+    input: {
+        borderWidth: 1,
+        borderColor: "#ccc",
+        borderRadius: 5,
+        padding: 10,
+        marginBottom: 15,
+        backgroundColor: "#fff",
+    },
+});
 
 export default RegisterPage;

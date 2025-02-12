@@ -1,13 +1,12 @@
-import { call_backend } from '@/utils/call_backend';
+import { call_backend, ProfileData } from '@/utils/call_backend';
 import { useEffect, useState } from 'react';
 import { PropsWithChildren } from 'react';
-import { StyleSheet, View, Pressable, Text } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 
-type Props = PropsWithChildren<{ username : string }>
 
-export default function UserIcon({ username, children }: Props) {
+export default function UserIcon({ children } : PropsWithChildren) {
 
-  const [ userData, setUserData ] = useState(null)
+  const [ userData, setUserData ] = useState<ProfileData>()
 
   useEffect(() => {
     async function profile(){
@@ -21,7 +20,7 @@ export default function UserIcon({ username, children }: Props) {
 
   return (
     <View >
-        <Text> USERNAME: {username} </Text>
+        <Text> USERNAME: {userData?.username} </Text>
         {children}
     </View>
   );

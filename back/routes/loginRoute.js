@@ -16,6 +16,21 @@ async function findUser(username, email){
     return user;
 }
 
+router.post('/refreshToken', async (req, res) => {
+    const refreshToken = req.data?.refreshToken
+    jwt.verify(refreshToken, process.env.JWT_REFRESH_TOKEN, async (err, token_data) => {
+        if (err) return res.status(403).json({ message: 'Unauthorized: refresh token verification failed' });
+        const user = await User.findById( token_data.user_id )
+        if(!user) return res.status(403).json({ message: 'Unauthorized: user in token not found' });
+        const newAccessToken = jwt.sign(
+            { user_id: user._id, username : user.username, email : user.email }, 
+            process.env.JWT_ACCESS_TOKEN, 
+            { expiresIn: '15m' }
+        );
+        return res.status(200).message({ 'access_token' : newAccessToken })
+    })
+})
+
 router.post('/', async (req, res) => {
     const {identifier, password} = req.body
     try{
@@ -42,11 +57,14 @@ router.post('/', async (req, res) => {
                 'refresh_token', 
                 refresh_token, 
                 { httpOnly: true, maxAge: 1000 * 60 * 60 * 12, secure: process.env.ENVIRONEMENT === 'PROD'}
-            ).status(200).json({ message : "Successful Login"})
+            ).status(200).json({ 
+                message : "Successful Login",
+                access_token : access_token,
+                refresh_token : refresh_token
+            })
         }else {
             return res.status(403).json({ message : "Incorrect username or Password"} );
         }
-        return user;
     } catch (error) {
         if(process.env.ENVIRONEMENT !== 'PROD'){ console.error("Error finding user", error); }
         return res.status(400).json({ message : "Incorrect username or Password"} );
