@@ -35,3 +35,5 @@ export type ProfileData = {
 }
 export async function fetchProfile() { return await call_backend('GET', '/user/profile') }
 
+export async function fetchSessions() { return await call_backend('GET', '/session') }
+export async function deleteSession( sessionId : string ) { return await call_backend('DELETE', '/session', sessionId) }

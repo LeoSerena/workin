@@ -2,12 +2,15 @@ import express from 'express';
 
 import { workoutSession, runningSession, bodySession, weightSession } from '../models/WorkoutSession.js';
 import User from '../models/User.js';
+import winston from 'winston/lib/winston/config/index.js';
 
 const router = express.Router();
 
 router.get('/', async (req, res) => {
     console.log(req.token_data)
-    const user = await User.findById( req.token_data.user_id );
+    const user = await User
+        .findById( req.token_data.user_id )
+        .populate('workoutSessions');
     if(!user) return res.status(400).json({ error : "User not found" })
     return res.status(200).json({ sessions : user.workoutSessions });
 });
@@ -38,7 +41,7 @@ router.get('/', async (req, res) => {
  */
 router.post('/', async (req, res) => {
     const { data } = req.body
-    console.log(data)
+    winston.debug("posted session: " + data)
     const user = await User.findById( req.token_data.user_id )
     if(!user) return res.status(400).json({ error : "User not found" })
     console.log(data.workoutType + ' Session')
@@ -99,7 +102,7 @@ router.post('/', async (req, res) => {
 
 router.post('/workout', async (req, res) => {
     const { data } = req.body;
-    console.log(data)
+    winston.debug(data)
     const session = await workoutSession.findById( data.session_id );
     if(!session) return res.status(400).json({ error : "Session not found" });
     if( session.user_id !== req.token_data.user_id ) return res.status(403).json({ error : "What are you trying to do here?"});
@@ -111,6 +114,11 @@ router.post('/workout', async (req, res) => {
         return res.status(500).json({message : "There was an error while saving data"})
     }
     
+})
+
+router.delete('/session', async (req, res) => {
+    const { data } = req.body;
+    winston.debug(data)
 })
 
 export default router;
