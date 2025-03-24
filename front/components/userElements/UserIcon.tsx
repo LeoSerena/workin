@@ -11,8 +11,7 @@ export default function UserIcon({ children } : PropsWithChildren) {
   useEffect(() => {
     async function profile(){
       const res = await call_backend('GET', '/user/profile')
-      console.log(res)
-      
+     
       setUserData(res?.data)
     }
     profile()

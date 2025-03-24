@@ -2,7 +2,7 @@ import express from 'express';
 
 import { workoutSession, runningSession, bodySession, weightSession } from '../models/WorkoutSession.js';
 import User from '../models/User.js';
-import winston from 'winston/lib/winston/config/index.js';
+import winston from 'winston';
 
 const router = express.Router();
 
@@ -29,6 +29,7 @@ router.get('/', async (req, res) => {
  * {
  *   "data": {
  *     "workoutType": "Running",
+ *     "sessionName" : "fractionned"
  *     "workoutRecords": [
  *       { "distance": 5, "duration": "00:25:00", "repetitions": 1 }
  *     ]
@@ -40,32 +41,32 @@ router.get('/', async (req, res) => {
  * @response {500} Internal Server Error - Unexpected server error
  */
 router.post('/', async (req, res) => {
-    const { data } = req.body
-    winston.debug("posted session: " + data)
-    const user = await User.findById( req.token_data.user_id )
-    if(!user) return res.status(400).json({ error : "User not found" })
-    console.log(data.workoutType + ' Session')
-    data.user_id = req.token_data.user_id
-    var session = {};
-    switch(data.workoutType){
-        case "Running":
-            session = new runningSession(data)
-            break;
-        case "Weigh":
-            session = new weightSession(data)
-            break;
-        case "BodyWeight":
-            session = new bodySession(data)
-            break;
-        default:
-            return res.status(400).json({ message : 'Wrong workoutType' })
-    }
-    user.workoutSessions.push(session)
     try{
+        const { data } = req.body
+        winston.debug("posted session: " + data)
+        const user = await User.findById( req.token_data.user_id )
+        if(!user) return res.status(400).json({ error : "User not found" })
+        data.user_id = req.token_data.user_id
+        var session = {};
+        switch(data.sessionType){
+            case "Running":
+                session = new runningSession(data)
+                break;
+            case "Weight":
+                session = new weightSession(data)
+                break;
+            case "BodyWeight":
+                session = new bodySession(data)
+                break;
+            default:
+                return res.status(400).json({ message : 'Wrong workoutType' })
+        }
+        user.workoutSessions.push(session)
         await session.save()
         await user.save()
     } catch (error) {
-        res.status(500).json({message : "There was an error while saving data"})
+        winston.error(error)
+        return res.status(500).json({message : "There was an error while saving data"  + error})
     }
     
 
@@ -116,9 +117,22 @@ router.post('/workout', async (req, res) => {
     
 })
 
-router.delete('/session', async (req, res) => {
+router.delete('/', async (req, res) => {
     const { data } = req.body;
-    winston.debug(data)
-})
+    winston.debug("deleting session: " + data.session_id);
+    try {
+        const session = await workoutSession.findById(data.session_id);
+        console.log(session)
+        if (!session) return res.status(400).json({ error: "Session not found" });
+        if (session.user_id !== req.token_data.user_id) {
+            return res.status(403).json({ error: "What are you trying to do here?" });
+        }
+        await session.deleteOne();
+        return res.status(200).json({ message: "Session deleted successfully" });
+    } catch (error) {
+        winston.error("Error deleting session: ", error);
+        return res.status(500).json({ message: "There was an error while deleting the session" });
+    }
+});
 
 export default router;

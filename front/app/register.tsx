@@ -39,10 +39,10 @@ const RegisterPage = () => {
                 />
                 )}
             />
-            <Text style={styles.label}>Email</Text>
+            <Text style={styles.label}>Username</Text>
             <Controller
                 control={control}
-                name="email"
+                name="username"
                 rules={{ required: true }}
                 render={({ field: { onChange, onBlur, value } }) => (
                     <TextInput

@@ -1,22 +1,118 @@
-import { Text, View, StyleSheet } from 'react-native';
+import React, { useRef } from 'react';
+import { Text, StyleSheet, View } from 'react-native';
 
-export default function MeasureScreen() {
+import {
+  GestureHandlerRootView,
+  Pressable,
+} from 'react-native-gesture-handler';
+import ReanimatedSwipeable, {
+  SwipeableMethods,
+} from 'react-native-gesture-handler/ReanimatedSwipeable';
+import Reanimated, {
+  SharedValue,
+  useAnimatedStyle,
+} from 'react-native-reanimated';
+
+function LeftAction(prog: SharedValue<number>, drag: SharedValue<number>) {
+  const styleAnimation = useAnimatedStyle(() => {
+    console.log('[R] showLeftProgress:', prog.value);
+    console.log('[R] appliedTranslation:', drag.value);
+
+    return {
+      transform: [{ translateX: drag.value - 50 }],
+    };
+  });
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>About screen</Text>
-    </View>
+    <Reanimated.View style={styleAnimation}>
+      <Text style={styles.leftAction}>Text</Text>
+    </Reanimated.View>
+  );
+}
+
+function RightAction(prog: SharedValue<number>, drag: SharedValue<number>) {
+  const styleAnimation = useAnimatedStyle(() => {
+    console.log('[R] showRightProgress:', prog.value);
+    console.log('[R] appliedTranslation:', drag.value);
+
+    return {
+      transform: [{ translateX: drag.value + 50 }],
+    };
+  });
+
+  return (
+    <Reanimated.View style={styleAnimation}>
+      <Text style={styles.rightAction}>Text</Text>
+    </Reanimated.View>
+  );
+}
+
+export default function Measures() {
+  const reanimatedRef = useRef<SwipeableMethods>(null);
+
+  return (
+    <GestureHandlerRootView>
+      <View style={styles.separator} />
+      <View style={styles.controlPanelWrapper}>
+        <Text>Programatical controls</Text>
+        <View style={styles.controlPanel}>
+          <Pressable
+            style={styles.control}
+            onPress={() => {
+              reanimatedRef.current!.close();
+            }}>
+            <Text>close</Text>
+          </Pressable>
+        </View>
+      </View>
+
+      <View style={styles.separator} />
+
+      <ReanimatedSwipeable
+        ref={reanimatedRef}
+        containerStyle={styles.swipeable}
+        friction={2}
+        leftThreshold={80}
+        enableTrackpadTwoFingerGesture
+        rightThreshold={40}
+        renderLeftActions={LeftAction}
+        renderRightActions={RightAction}>
+        <Text>[Reanimated] Swipe me!</Text>
+      </ReanimatedSwipeable>
+
+      <View style={styles.separator} />
+
+      <View style={styles.separator} />
+    </GestureHandlerRootView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#25292e',
-    justifyContent: 'center',
+  leftAction: { width: 50, height: 50, backgroundColor: 'crimson' },
+  rightAction: { width: 50, height: 50, backgroundColor: 'purple' },
+  separator: {
+    width: '100%',
+    borderTopWidth: 1,
+  },
+  swipeable: {
+    height: 50,
+    backgroundColor: 'papayawhip',
     alignItems: 'center',
   },
-  text: {
-    color: '#fff',
+  controlPanelWrapper: {
+    backgroundColor: 'papayawhip',
+    alignItems: 'center',
+  },
+  controlPanel: {
+    backgroundColor: 'papayawhip',
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  control: {
+    flex: 1,
+    height: 40,
+    borderWidth: StyleSheet.hairlineWidth,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
-

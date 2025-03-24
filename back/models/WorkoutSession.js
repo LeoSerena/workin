@@ -1,13 +1,14 @@
 import mongoose from 'mongoose';
 
-const workoutSessionSchema = new mongoose.Schema(
+const sessionSchema = new mongoose.Schema(
     { 
-        workoutType : { type : String, required: true },
+        sessionType : { type : String, required: true },
+        sessionName : { type : String, required: false },
         user_id : String
     }, 
     { timestamps : true }
 )
-const WokoutSession = mongoose.model('WorkoutSession', workoutSessionSchema)
+const WokoutSession = mongoose.model('WorkoutSession', sessionSchema)
 
 const RunningWorkoutSession = WokoutSession.discriminator(
     'Running',

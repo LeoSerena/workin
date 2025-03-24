@@ -1,16 +1,23 @@
-import axios from "axios";
+import axios, {AxiosResponse} from "axios";
 
-export async function call_backend(method :string, route: string, payload? : any ){
+export async function call_backend(method :string, route: string, payload? : any ) : Promise<AxiosResponse<any, any>> {
 
-    const config = { withCredentials: true }
+    const config = { 
+        withCredentials: true,
+        headers : { 'Content-Type' : 'application/json' }
+    }
 
-    // const api_route = "http://192.168.1.40" + ":" + "5000" + route
-    const api_route = "http://localhost" + ":" + "5000" + route
+    const api_route = "http://192.168.1.40" + ":" + "5000" + route
+    // const api_route = "http://localhost" + ":" + "5000" + route
     switch(method){
         case "GET":
             return await axios.get( api_route, { ...config, params: payload} )
         case "POST":
             return await axios.post( api_route, payload, config )
+        case "DELETE":
+            return await axios.delete( api_route, { ...config, data: payload } )
+        default:
+            throw new Error(`Unsupported HTTP method: ${method}`);
     }
 }
 
@@ -36,4 +43,12 @@ export type ProfileData = {
 export async function fetchProfile() { return await call_backend('GET', '/user/profile') }
 
 export async function fetchSessions() { return await call_backend('GET', '/session') }
-export async function deleteSession( sessionId : string ) { return await call_backend('DELETE', '/session', sessionId) }
+export async function deleteSession( sessionId : string ) {
+    console.log("deleting: " + sessionId)
+    return await call_backend('DELETE', '/session', {'data' : { "session_id" : sessionId} } ) 
+}
+export type AddSessionType = {
+    sessionType : string
+    sessionName? : string
+}
+export async function addSession( data : AddSessionType ) { return await call_backend('POST', '/session', { 'data' : data } ) }
